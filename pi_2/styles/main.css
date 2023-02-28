@@ -4,9 +4,9 @@ body {
 	background-size: cover;
 	background-position: center;
 	display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  	flex-direction: column;
+  	justify-content: center;
+  	align-items: center;
   }
 	
 	#title{
@@ -57,7 +57,7 @@ body {
 
 	.container {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(1, 5fr);
 		grid-auto-rows: 4.6875rem;
 		justify-content: center;
 		align-items: center;
