@@ -12,6 +12,8 @@ var game = new Vue({
 		bad_clicks: 0
 	},
 	created: function(){
+		var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard"}';
+		options_data = JSON.parse(json);
 		this.username = sessionStorage.getItem("username","unknown");
 		this.items = items.slice(); // Copiem l'array
 		this.items.sort(function(){return Math.random() - 0.5}); // Array aleatòria
@@ -28,7 +30,7 @@ var game = new Vue({
 				Vue.set(this.current_card, i, {done: false, texture: this.items[i]});
 		}
 	},
-	watch: {
+	watch: {//Nova vue si la partida ha començat (punt 7)
 		current_card: function(value){
 			if (value.texture === back) return;
 			var front = null;
@@ -61,7 +63,7 @@ var game = new Vue({
 		}
 	}
 });
-
+console.log(options_data);
 
 
 

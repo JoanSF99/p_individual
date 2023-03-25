@@ -1,5 +1,5 @@
 function start_game(){
-	loadpage("./pi_2/index.html");
+	loadpage("./pi_3/index.html");
 }
 
 
