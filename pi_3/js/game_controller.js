@@ -20,9 +20,11 @@ var game = new Vue({
 		this.items = this.items.slice(0, this.num_cards); // Agafem els primers numCards elements
 		this.items = this.items.concat(this.items); // Dupliquem els elements
 		this.items.sort(function(){return Math.random() - 0.5}); // Array aleatòria
-		for (var i = 0; i < this.items.length; i++){
+		for (var i = 0; i < this.num_cards * 2; i++) { // Cambio this.items.length por this.num_cards * 2
+			console.log(i);
 			this.current_card.push({done: false, texture: back});
 		}
+		console.log(options_data);
 	},
 	methods: {
 		clickCard: function(i){
@@ -63,7 +65,6 @@ var game = new Vue({
 		}
 	}
 });
-console.log(options_data);
 
 
 
