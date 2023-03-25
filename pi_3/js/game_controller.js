@@ -1,3 +1,4 @@
+
 const back = "../resources/back.png";
 const items = ["../resources/cb.png","../resources/co.png","../resources/sb.png",
 "../resources/so.png","../resources/tb.png","../resources/to.png"];
@@ -12,29 +13,23 @@ var game = new Vue({
 		bad_clicks: 0
 	},
 	created: function(){
-		var num_cards= JSON.parse(localStorage.getItem("config")).cards;
 		var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard"}';
 		options_data = JSON.parse(json);
 		this.username = sessionStorage.getItem("username","unknown");
-		this.items = items.slice(); // Copiem l'array
-		this.items.sort(function(){return Math.random() - 0.5}); // Array aleatòria
-		this.items = this.items.slice(0, this.num_cards); // Agafem els primers numCards elements
-		this.items = this.items.concat(this.items); // Dupliquem els elements
-		this.items.sort(function(){return Math.random() - 0.5}); // Array aleatòria
-		for (var i = 0; i < num_cards * 2; i++) {
-			this.current_card.push({done: false, texture: back});
+		this.items = items.slice(); // Copy the array
+		this.items.sort(function(){return Math.random() - 0.5}); // Shuffle the array
+		this.num_cards = options_data.cards; // Set num_cards to the value from localStorage
+		this.items = this.items.slice(0, this.num_cards); // Take the first numCards elements
+		this.items = this.items.concat(this.items); // Duplicate the elements
+		this.items.sort(function(){return Math.random() - 0.5}); // Shuffle the array
+		for (var i = 0; i < this.num_cards * 2; i++) {
+		this.current_card.push({done: false, texture: back});
 		}
+
+		console.log(this.num_cards)
 		
 		setTimeout(() => {
-			for (var i = 0; i < this.items.length; i++){
-				Vue.set(this.current_card, i, {done: false, texture: items[i]});
-			}
-			console.log("ha pasat 1s")
-			setTimeout(() => {
-				for (var i = 0; i < this.current_card.length; i++){
-					Vue.set(this.current_card, i, {done: false, texture: back});
-				}
-			}, 1000); // 1000 milisegundos = 1 segundo
+			console.log("1s")
 		}, 1000); // Esperamos 1 segundo antes de cambiar las texturas a "front"
 	},
 	methods: {
@@ -43,7 +38,7 @@ var game = new Vue({
 				Vue.set(this.current_card, i, {done: false, texture: this.items[i]});
 		}
 	},
-	watch: {
+	watch: {//Nova vue si la partida ha començat (punt 7)
 		current_card: function(value){
 			if (value.texture === back) return;
 			var front = null;
