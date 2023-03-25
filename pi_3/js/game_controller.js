@@ -12,6 +12,7 @@ var game = new Vue({
 		bad_clicks: 0
 	},
 	created: function(){
+		var num_cards= JSON.parse(localStorage.getItem("config")).cards;
 		var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard"}';
 		options_data = JSON.parse(json);
 		this.username = sessionStorage.getItem("username","unknown");
@@ -20,11 +21,21 @@ var game = new Vue({
 		this.items = this.items.slice(0, this.num_cards); // Agafem els primers numCards elements
 		this.items = this.items.concat(this.items); // Dupliquem els elements
 		this.items.sort(function(){return Math.random() - 0.5}); // Array aleatòria
-		for (var i = 0; i < this.num_cards * 2; i++) { // Cambio this.items.length por this.num_cards * 2
-			console.log(i);
+		for (var i = 0; i < num_cards * 2; i++) {
 			this.current_card.push({done: false, texture: back});
 		}
-		console.log(options_data);
+		
+		setTimeout(() => {
+			for (var i = 0; i < this.items.length; i++){
+				Vue.set(this.current_card, i, {done: false, texture: items[i]});
+			}
+			console.log("ha pasat 1s")
+			setTimeout(() => {
+				for (var i = 0; i < this.current_card.length; i++){
+					Vue.set(this.current_card, i, {done: false, texture: back});
+				}
+			}, 1000); // 1000 milisegundos = 1 segundo
+		}, 1000); // Esperamos 1 segundo antes de cambiar las texturas a "front"
 	},
 	methods: {
 		clickCard: function(i){
@@ -32,7 +43,7 @@ var game = new Vue({
 				Vue.set(this.current_card, i, {done: false, texture: this.items[i]});
 		}
 	},
-	watch: {//Nova vue si la partida ha començat (punt 7)
+	watch: {
 		current_card: function(value){
 			if (value.texture === back) return;
 			var front = null;
@@ -65,7 +76,3 @@ var game = new Vue({
 		}
 	}
 });
-
-
-
-
