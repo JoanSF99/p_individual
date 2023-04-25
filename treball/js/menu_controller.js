@@ -18,4 +18,8 @@ function options(){
 	loadpage("./html/options.html");
 }
 
+function ranking(){
+	loadpage("./html/ranking.html");
+}
+
 

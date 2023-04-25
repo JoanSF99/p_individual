@@ -25,18 +25,13 @@ class GameScene extends Phaser.Scene {
     }
 
     create(){
-        console.log(this.level);
-        //console.log(this.totalScore);
-        //console.log(this.score);
-        console.log(this.showTime);
-        
-
         var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","game_mode":"normal"}';
 		var options_data = JSON.parse(json);
 
+        console.log(localStorage.getItem("scores"))
+
         this.dificulty = options_data.dificulty;
         this.gameMode = options_data.game_mode;
-        console.log(this.gameMode);
 		this.username = sessionStorage.getItem("username","unknown");
 		this.arrayCards = this.arrayCardsTotal.slice(); // Copy the array
 		this.arrayCards.sort(function(){return Math.random() - 0.5}); // Shuffle the array
@@ -94,8 +89,7 @@ class GameScene extends Phaser.Scene {
                 }, 1000);
             }
         }
-        else{
-            
+        else{ 
             if (this.level>=5){
                 setTimeout(() => {
                     this.cards.children.iterate((card) => {
@@ -111,9 +105,7 @@ class GameScene extends Phaser.Scene {
                 }, this.showTime);
             }
             
-        }
-        
-        
+        }    
 
         this.cameras.main.setBackgroundColor(0xBFFCFF);
 
@@ -122,51 +114,84 @@ class GameScene extends Phaser.Scene {
             card.card_id=this.arrayCards[i];
             i++;
             card.setInteractive();
-            card.on('pointerup',()=>{
-                card.disableBody(true,true);
-                if(this.firstClick){
-                    if(this.firstClick.card_id != card.card_id){
-                        if(this.gameMode=="normal"){
-                            if(this.dificulty=="easy"){
-                                this.score-=10;
+            card.on('pointerup', () => {
+                card.disableBody(true, true);
+                if (this.firstClick) {
+                    if (this.firstClick.card_id != card.card_id) {
+                        if (this.gameMode == "normal") {
+                            if (this.dificulty == "easy") {
+                                this.score -= 10;
+                            } else if (this.dificulty == "normal") {
+                                this.score -= 20;
                             }
-                            else if(this.dificulty=="normal"){
-                                this.score-=20;
+                            if (this.dificulty == "hard") {
+                                this.score -= 40;
                             }
-                            if(this.dificulty=="hard"){
-                                this.score-=40;
-                            }
-                            
-                        }
-                        else{
+                        } else {
                             this.score -= 10 * this.level;
                         }
-                        this.firstClick.enableBody(false,0,0,true,true);
-                            card.enableBody(false,0,0,true,true);
-                            if(this.score<=0){
-                                alert("Game Over");
-                                loadpage("../../index.html");
+
+                        let firstCard = this.firstClick;
+                        let secondCard = card;
+
+                        if (this.gameMode == "normal") {
+                            if (this.dificulty == "easy") {
+                                setTimeout(() => {
+                                    firstCard.enableBody(false, 0, 0, true, true);
+                                    secondCard.enableBody(false, 0, 0, true, true);
+                                }, 1500);
+                            } else if (this.dificulty == "normal") {
+                                setTimeout(() => {
+                                    firstCard.enableBody(false, 0, 0, true, true);
+                                    secondCard.enableBody(false, 0, 0, true, true);
+                                }, 1000);
                             }
-                    }
-                    else{
-                        this.correct++;
-                        if(this.correct>=this.num_cards){
-                            console.log(this.gameMode);
-                            if(this.gameMode=="infinite"){
-                                this.restartGame();
+                            if (this.dificulty == "hard") {
+                                setTimeout(() => {
+                                    firstCard.enableBody(false, 0, 0, true, true);
+                                    secondCard.enableBody(false, 0, 0, true, true);
+                                }, 500);
+                            }
+                        } else {
+                            if (this.level>=5){
+                                setTimeout(() => {
+                                    firstCard.enableBody(false, 0, 0, true, true);
+                                    secondCard.enableBody(false, 0, 0, true, true);
+                                }, 500);
                             }
                             else{
-                                alert("You win with "+this.score+" points");
+                                setTimeout(() => {
+                                    firstCard.enableBody(false, 0, 0, true, true);
+                                    secondCard.enableBody(false, 0, 0, true, true);
+                                }, 1000);
+                            }
+                        }
+            
+                        if (this.score <= 0) {
+                            alert("Game Over");
+                            let name = sessionStorage.getItem("username");
+                            saveScore(name, this.totalScore);
+                            loadpage("../../index.html");
+                        }
+
+                    } else {
+                        this.correct++;
+                        if (this.correct >= this.num_cards) {
+                            console.log(this.gameMode);
+                            if (this.gameMode == "infinite") {
+                                this.restartGame();
+                            } 
+                            else {
+                                alert("You win with " + this.score + " points");
                                 loadpage("../../index.html");
                             }
                         }
                     }
-                    this.firstClick=null;
+                    this.firstClick = null;
+                } else {
+                    this.firstClick = card;
                 }
-                else{
-                    this.firstClick=card;
-                }
-            },card);
+            }, card);                        
         });
     }
     update(){}
