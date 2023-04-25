@@ -9,6 +9,7 @@ class GameScene extends Phaser.Scene {
         this.correct=0;
         this.arrayCards=[];
         this.arrayCardsTotal=['co','sb','cb','so','tb','to'];
+        this.level = 1;
     }
 
     preload(){
@@ -23,14 +24,20 @@ class GameScene extends Phaser.Scene {
 
     create(){
 
-        var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard"}';
+        var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","gameMode":"normal"}';
 		var options_data = JSON.parse(json);
 
         this.dificulty = options_data.dificulty;
+        this.gameMode = options_data.gameMode;
 		this.username = sessionStorage.getItem("username","unknown");
 		this.arrayCards = this.arrayCardsTotal.slice(); // Copy the array
 		this.arrayCards.sort(function(){return Math.random() - 0.5}); // Shuffle the array
-		this.num_cards = options_data.cards; // Set num_cards to the value from localStorage
+        if(this.gameMode=="normal"){
+            this.num_cards = options_data.cards; // Set num_cards to the value from localStorage
+        }
+        else{
+            this.num_cards = 2;
+        }
 		this.arrayCards = this.arrayCards.slice(0, this.num_cards); // Take the first numCards elements
 		this.arrayCards = this.arrayCards.concat(this.arrayCards); // Duplicate the elements
 		this.arrayCards.sort(function(){return Math.random() - 0.5}); // Shuffle the array
@@ -50,6 +57,34 @@ class GameScene extends Phaser.Scene {
 		}
         console.log(options_data);
 
+        
+        this.cards.children.iterate((card) => {
+            card.disableBody(true, true);
+        });
+    
+        if(this.dificulty=="easy"){
+            setTimeout(() => {
+                this.cards.children.iterate((card) => {
+                    card.enableBody(false, 0, 0, true, true);
+                });
+            }, 3000);
+        }
+        else if(this.dificulty=="normal"){
+            setTimeout(() => {
+                this.cards.children.iterate((card) => {
+                    card.enableBody(false, 0, 0, true, true);
+                });
+            }, 2000);
+        }
+        else if(this.dificulty=="hard"){
+            setTimeout(() => {
+                this.cards.children.iterate((card) => {
+                    card.enableBody(false, 0, 0, true, true);
+                });
+            }, 1000);
+        }
+        
+
         this.cameras.main.setBackgroundColor(0xBFFCFF);
 
         let i=0;
@@ -62,7 +97,15 @@ class GameScene extends Phaser.Scene {
                 card.disableBody(true,true);
                 if(this.firstClick){
                     if(this.firstClick.card_id != card.card_id){
-                        this.score-=20;
+                        if(this.dificulty=="easy"){
+                            this.score-=10;
+                        }
+                        else if(this.dificulty=="normal"){
+                            this.score-=20;
+                        }
+                        if(this.dificulty=="hard"){
+                            this.score-=40;
+                        }
                         this.firstClick.enableBody(false,0,0,true,true);
                         card.enableBody(false,0,0,true,true);
                         if(this.score<=0){
