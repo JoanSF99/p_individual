@@ -1,3 +1,5 @@
+"use strict"
+
 class GameScene extends Phaser.Scene {
     constructor(){
         super('GameScene');
@@ -5,6 +7,8 @@ class GameScene extends Phaser.Scene {
         this.firstClick=null;
         this.score=100;
         this.correct=0;
+        this.arrayCards=[];
+        this.arrayCardsTotal=['co','sb','cb','so','tb','to'];
     }
 
     preload(){
@@ -18,31 +22,43 @@ class GameScene extends Phaser.Scene {
     }
 
     create(){
-        let arrayCards=['co','sb','co','sb'];
-        this.cameras.main.setBackgroundColor(0xBFFCFF);
+
+        var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard"}';
+		var options_data = JSON.parse(json);
+
+        this.dificulty = options_data.dificulty;
+		this.username = sessionStorage.getItem("username","unknown");
+		this.arrayCards = this.arrayCardsTotal.slice(); // Copy the array
+		this.arrayCards.sort(function(){return Math.random() - 0.5}); // Shuffle the array
+		this.num_cards = options_data.cards; // Set num_cards to the value from localStorage
+		this.arrayCards = this.arrayCards.slice(0, this.num_cards); // Take the first numCards elements
+		this.arrayCards = this.arrayCards.concat(this.arrayCards); // Duplicate the elements
+		this.arrayCards.sort(function(){return Math.random() - 0.5}); // Shuffle the array
         this.cards=this.physics.add.staticGroup();
 
-        var xPos = 250;
-        var yPos = 300;
+        let cardWidth = 100;
+        let totalWidth = this.num_cards * 2 * cardWidth;
+        let startX = (1000 - totalWidth) / 2;
 
-        this.add.image(xPos, yPos, arrayCards[0]);
-        this.cards.create(xPos,yPos,'back');
-        xPos += 100;
-        this.add.image(xPos, yPos, arrayCards[1]);
-        this.cards.create(xPos,yPos,'back');
-        xPos += 100;
-        this.add.image(xPos, yPos, arrayCards[2]);
-        this.cards.create(xPos,yPos,'back');
-        xPos += 100;
-        this.add.image(xPos, yPos, arrayCards[3]);
-        this.cards.create(xPos,yPos,'back');
+        let xPos = startX;
+        let yPos = 300;
+
+		for (let i = 0; i < this.num_cards * 2; i++) {
+				this.add.image(xPos, yPos, this.arrayCards[i]);
+                this.cards.create(xPos,yPos,'back');
+                xPos+=100;
+		}
+        console.log(options_data);
+
+        this.cameras.main.setBackgroundColor(0xBFFCFF);
 
         let i=0;
         this.cards.children.iterate((card)=>{
-            card.card_id=arrayCards[i];
+            card.card_id=this.arrayCards[i];
             i++;
             card.setInteractive();
             card.on('pointerup',()=>{
+                console.log(card);
                 card.disableBody(true,true);
                 if(this.firstClick){
                     if(this.firstClick.card_id != card.card_id){
@@ -56,12 +72,12 @@ class GameScene extends Phaser.Scene {
                     }
                     else{
                         this.correct++;
-                        if(this.correct>=2){
+                        if(this.correct>=this.num_cards){
                             alert("You win with "+this.score+" points");
                             loadpage("../../index.html");
                         }
                     }
-                    this,this.firstClick=null;
+                    this.firstClick=null;
                 }
                 else{
                     this.firstClick=card;

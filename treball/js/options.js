@@ -1,10 +1,10 @@
 var options = function(){
 	// Aquí dins hi ha la part privada de l'objecte
 	var options_data = {
-		cards:2, dificulty:"hard"
+		cards:2, dificulty:"hard", game_mode:"normal"
 	};
 	var load = function(){
-		var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard"}';
+		var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","game_mode":"normal"}';
 		options_data = JSON.parse(json);
 	};
 	var save = function(){
@@ -15,11 +15,13 @@ var options = function(){
 		el: "#options_id",
 		data: {
 			num: 2,
-			dificulty: "normal"
+			dificulty: "normal",
+			game_mode: "normal"
 		},
 		created: function(){
 			this.num = options_data.cards;
 			this.dificulty = options_data.dificulty;
+			this.game_mode = options_data.game_mode;
 		},
 		watch: {
 			num: function(value){
@@ -29,14 +31,16 @@ var options = function(){
 					this.num = 4;
 			}
 		},
-		methods: { 
+		methods: {
 			discard: function(){
 				this.num = options_data.cards;
 				this.dificulty = options_data.dificulty;
+				this.game_mode = options_data.game_mode;
 			},
 			save: function(){
 				options_data.cards = this.num;
 				options_data.dificulty = this.dificulty;
+				options_data.game_mode = this.game_mode;
 				save();
 				loadpage("../");
 			}
@@ -52,15 +56,15 @@ var options = function(){
 		},
 		getDificulty: function (){
 			return options_data.dificulty;
+		},
+		getGameMode: function (){
+			return options_data.game_mode;
 		}
-	}; 
+	};
 }();
 
 console.log(options.getOptionsString());
 console.log(options.getNumOfCards());
 console.log(options.getDificulty());
+console.log(options.getGameMode());
 console.log(options.options_data);
-
-
-
-
