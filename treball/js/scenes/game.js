@@ -3,13 +3,15 @@
 class GameScene extends Phaser.Scene {
     constructor(){
         super('GameScene');
-        this.cards=null;
-        this.firstClick=null;
-        this.score=100;
-        this.correct=0;
-        this.arrayCards=[];
-        this.arrayCardsTotal=['co','sb','cb','so','tb','to'];
+        this.cards = null;
+        this.firstClick = null;
+        this.score = 100;
+        this.totalScore = 0;
+        this.correct = 0;
+        this.arrayCards = [];
+        this.arrayCardsTotal = ['co','sb','cb','so','tb','to'];
         this.level = 1;
+        this.showTime = 5000;
     }
 
     preload(){
@@ -23,12 +25,18 @@ class GameScene extends Phaser.Scene {
     }
 
     create(){
+        console.log(this.level);
+        //console.log(this.totalScore);
+        //console.log(this.score);
+        console.log(this.showTime);
+        
 
-        var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","gameMode":"normal"}';
+        var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","game_mode":"normal"}';
 		var options_data = JSON.parse(json);
 
         this.dificulty = options_data.dificulty;
-        this.gameMode = options_data.gameMode;
+        this.gameMode = options_data.game_mode;
+        console.log(this.gameMode);
 		this.username = sessionStorage.getItem("username","unknown");
 		this.arrayCards = this.arrayCardsTotal.slice(); // Copy the array
 		this.arrayCards.sort(function(){return Math.random() - 0.5}); // Shuffle the array
@@ -36,7 +44,7 @@ class GameScene extends Phaser.Scene {
             this.num_cards = options_data.cards; // Set num_cards to the value from localStorage
         }
         else{
-            this.num_cards = 2;
+            this.num_cards = Math.min(4, this.level + 1);
         }
 		this.arrayCards = this.arrayCards.slice(0, this.num_cards); // Take the first numCards elements
 		this.arrayCards = this.arrayCards.concat(this.arrayCards); // Duplicate the elements
@@ -62,27 +70,49 @@ class GameScene extends Phaser.Scene {
             card.disableBody(true, true);
         });
     
-        if(this.dificulty=="easy"){
-            setTimeout(() => {
-                this.cards.children.iterate((card) => {
-                    card.enableBody(false, 0, 0, true, true);
-                });
-            }, 3000);
+        console.log(this.gameMode)
+        if(this.gameMode=="infinite"){
+            if(this.dificulty=="easy"){
+                setTimeout(() => {
+                    this.cards.children.iterate((card) => {
+                        card.enableBody(false, 0, 0, true, true);
+                    });
+                }, 3000);
+            }
+            else if(this.dificulty=="normal"){
+                setTimeout(() => {
+                    this.cards.children.iterate((card) => {
+                        card.enableBody(false, 0, 0, true, true);
+                    });
+                }, 2000);
+            }
+            else if(this.dificulty=="hard"){
+                setTimeout(() => {
+                    this.cards.children.iterate((card) => {
+                        card.enableBody(false, 0, 0, true, true);
+                    });
+                }, 1000);
+            }
         }
-        else if(this.dificulty=="normal"){
-            setTimeout(() => {
-                this.cards.children.iterate((card) => {
-                    card.enableBody(false, 0, 0, true, true);
-                });
-            }, 2000);
+        else{
+            
+            if (this.level>=5){
+                setTimeout(() => {
+                    this.cards.children.iterate((card) => {
+                        card.enableBody(false, 0, 0, true, true);
+                    });
+                }, 1000);
+            }
+            else{
+                setTimeout(() => {
+                    this.cards.children.iterate((card) => {
+                        card.enableBody(false, 0, 0, true, true);
+                    });
+                }, this.showTime);
+            }
+            
         }
-        else if(this.dificulty=="hard"){
-            setTimeout(() => {
-                this.cards.children.iterate((card) => {
-                    card.enableBody(false, 0, 0, true, true);
-                });
-            }, 1000);
-        }
+        
         
 
         this.cameras.main.setBackgroundColor(0xBFFCFF);
@@ -93,31 +123,42 @@ class GameScene extends Phaser.Scene {
             i++;
             card.setInteractive();
             card.on('pointerup',()=>{
-                console.log(card);
                 card.disableBody(true,true);
                 if(this.firstClick){
                     if(this.firstClick.card_id != card.card_id){
-                        if(this.dificulty=="easy"){
-                            this.score-=10;
+                        if(this.gameMode=="normal"){
+                            if(this.dificulty=="easy"){
+                                this.score-=10;
+                            }
+                            else if(this.dificulty=="normal"){
+                                this.score-=20;
+                            }
+                            if(this.dificulty=="hard"){
+                                this.score-=40;
+                            }
+                            
                         }
-                        else if(this.dificulty=="normal"){
-                            this.score-=20;
-                        }
-                        if(this.dificulty=="hard"){
-                            this.score-=40;
+                        else{
+                            this.score -= 10 * this.level;
                         }
                         this.firstClick.enableBody(false,0,0,true,true);
-                        card.enableBody(false,0,0,true,true);
-                        if(this.score<=0){
-                            alert("Game Over");
-                            loadpage("../../index.html");
-                        }
+                            card.enableBody(false,0,0,true,true);
+                            if(this.score<=0){
+                                alert("Game Over");
+                                loadpage("../../index.html");
+                            }
                     }
                     else{
                         this.correct++;
                         if(this.correct>=this.num_cards){
-                            alert("You win with "+this.score+" points");
-                            loadpage("../../index.html");
+                            console.log(this.gameMode);
+                            if(this.gameMode=="infinite"){
+                                this.restartGame();
+                            }
+                            else{
+                                alert("You win with "+this.score+" points");
+                                loadpage("../../index.html");
+                            }
                         }
                     }
                     this.firstClick=null;
@@ -129,4 +170,14 @@ class GameScene extends Phaser.Scene {
         });
     }
     update(){}
+
+    restartGame() {
+        this.level++;
+        this.num_cards = Math.min(4, this.level + 1);
+        this.correct = 0;
+        this.totalScore += this.score;
+        this.score = 100;
+        this.showTime -= 1000;
+        this.scene.restart();
+    }
 }
