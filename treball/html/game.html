@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="../styles/main.css">
     <script src="//cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="../js/loader.js"></script>
+    <script src="../js/save.js"></script>
     <script src="../js/options.js"></script>
     <script src="../js/ranking.js"></script>
     <script src="../js/scenes/game.js"></script>
@@ -17,9 +19,15 @@
 </head>
 <body>
     <div id="game_area"></div>
-    <button class="menu-object" onclick="Guardar()"> 
-        Start Game 
+    <button class="menu-object" onclick="save_game()"> 
+        Save and exit
     </button>
-    
+    <script>
+        function save_game() {
+            let gameScene = game.scene.getScene('GameScene');
+            gameScene.saveGame();
+            loadpage("../index.html");
+        }
+    </script>
 </body>
 </html>

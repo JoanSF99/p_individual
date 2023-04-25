@@ -25,6 +25,7 @@ class GameScene extends Phaser.Scene {
     }
 
     create(){
+        console.log(localStorage.getItem("gameState"))
         var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","game_mode":"normal"}';
 		var options_data = JSON.parse(json);
 
@@ -204,5 +205,27 @@ class GameScene extends Phaser.Scene {
         this.score = 100;
         this.showTime -= 1000;
         this.scene.restart();
+    }
+
+    saveGame() {
+        let gameState = {
+            gameMode: this.gameMode,
+            dificulty: this.dificulty,
+            level: this.level,
+            totalScore: this.totalScore,
+            username: this.username
+        };
+        localStorage.setItem('gameState', JSON.stringify(gameState));
+    }
+
+    loadGame() {
+        let gameState = JSON.parse(localStorage.getItem('gameState'));
+        if (gameState) {
+            this.gameMode = gameState.gameMode;
+            this.dificulty = gameState.dificulty;
+            this.level = gameState.level;
+            this.totalScore = gameState.totalScore;
+            this.username = gameState.username;
+        }
     }
 }

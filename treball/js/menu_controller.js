@@ -22,4 +22,10 @@ function ranking(){
 	loadpage("./html/ranking.html");
 }
 
+function load_game() {
+    let gameScene = game.scene.getScene('game');
+    gameScene.loadGame();
+	loadpage("./html/game.html");
+}
+
 
