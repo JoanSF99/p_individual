@@ -1,18 +1,22 @@
 "use strict";
 
-var config = {
-    type: Phaser.AUTO,
-    width: 1000,
-    height: 600,
-	parent: 'game_area',
-	physics:{
-		default: 'arcade',
-		arcade: {
-			gavity: {y:0},
-			debug: false
-		}
-	},
-    scene: [GameScene]
-};
+let game; // Define the game variable at the top level
 
-var game = new Phaser.Game(config);
+function start_game() {
+    // Create a new Phaser game instance and assign it to the game variable
+    game = new Phaser.Game({
+        type: Phaser.AUTO,
+        width: 1000,
+        height: 600,
+        parent: 'game_area',
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 0 },
+                debug: false
+            }
+        },
+        scene: [GameScene]
+    });
+}
+

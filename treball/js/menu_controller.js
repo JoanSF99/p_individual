@@ -4,6 +4,7 @@ function start_game(){
 	sessionStorage.setItem("username", name);
 	
 	loadpage("./html/game.html");
+	window.start_game();
 }
 
 function exit (){
