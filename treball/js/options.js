@@ -1,10 +1,10 @@
 var options = function(){
 	// Aquí dins hi ha la part privada de l'objecte
 	var options_data = {
-		cards:2, dificulty:"hard", game_mode:"normal"
+		cards:2, dificulty:"hard", level_infinite:1
 	};
 	var load = function(){
-		var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","game_mode":"normal"}';
+		var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","level_infinite":1}';
 		options_data = JSON.parse(json);
 	};
 	var save = function(){
@@ -16,12 +16,12 @@ var options = function(){
 		data: {
 			num: 2,
 			dificulty: "normal",
-			game_mode: "normal"
+			level_infinite: 1
 		},
 		created: function(){
 			this.num = options_data.cards;
 			this.dificulty = options_data.dificulty;
-			this.game_mode = options_data.game_mode;
+			this.level_infinite = options_data.level_infinite;
 		},
 		watch: {
 			num: function(value){
@@ -29,18 +29,24 @@ var options = function(){
 					this.num = 2;
 				else if (value > 4)
 					this.num = 4;
+			},
+			level_infinite: function(value){
+				if (value < 1)
+					this.num = 1;
+				else if (value > 5)
+					this.num = 5;
 			}
 		},
 		methods: {
 			discard: function(){
 				this.num = options_data.cards;
 				this.dificulty = options_data.dificulty;
-				this.game_mode = options_data.game_mode;
+				this.level_infinite = options_data.level_infinite;
 			},
 			save: function(){
 				options_data.cards = this.num;
 				options_data.dificulty = this.dificulty;
-				options_data.game_mode = this.game_mode;
+				options_data.level_infinite = this.level_infinite;
 				save();
 				loadpage("../");
 			}
@@ -57,14 +63,14 @@ var options = function(){
 		getDificulty: function (){
 			return options_data.dificulty;
 		},
-		getGameMode: function (){
-			return options_data.game_mode;
+		getLevelInfinite: function (){
+			return options_data.level_infinite;
 		}
 	};
 }();
 
-console.log(options.getOptionsString());
-console.log(options.getNumOfCards());
-console.log(options.getDificulty());
-console.log(options.getGameMode());
-console.log(options.options_data);
+//console.log(options.getOptionsString());
+//console.log(options.getNumOfCards());
+//console.log(options.getDificulty());
+console.log(options.getLevelInfinite());
+//console.log(options.options_data);

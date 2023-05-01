@@ -7,12 +7,12 @@
 	</head>
 	<body>
 		<div id="options_id">
-			<p class="menu-object" id="title">Options menú</p>
-			<div class="menu-object">
+			<p class="other-text" id="title">Options menú</p>
+			<div class="other-text" id="content">
 				<label for="labelnumber">Number of cards:</label>
 				<input type="number" id="labelnumber" v-model="num">
 			</div>
-			<div class="menu-object">
+			<div class="other-text" id="content">
 				<p>Dificulty:</p>
 				<input type="radio" id="easy" value="easy" v-model="dificulty" checked>
 				<label for="easy">Easy</label>
@@ -21,12 +21,9 @@
 				<input type="radio" id="hard" value="hard" v-model="dificulty" >
 				<label for="hard">Hard</label>
 			</div>
-			<div class="menu-object">
-				<p>Game mode:</p>
-				<input type="radio" id="normal" value="normal" v-model="game_mode" checked>
-				<label for="normal">Normal</label>
-				<input type="radio" id="infinite" value="infinite" v-model="game_mode" >
-				<label for="normal">Infinite</label>
+			<div class="other-text" id="content">
+				<label for="levelinfinite">Infinite level:</label>
+				<input type="number" id="levelinfinite" v-model="level_infinite" min="1">
 			</div>
 			<button class="menu-object" v-on:click="save"> Save </button>
 			<button class="menu-object" v-on:click="discard"> Discard </button>

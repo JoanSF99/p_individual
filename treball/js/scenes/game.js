@@ -12,6 +12,7 @@ class GameScene extends Phaser.Scene {
         this.arrayCardsTotal = ['co','sb','cb','so','tb','to'];
         this.level = 1;
         this.showTime = 5000;
+        this.gameStarted = false;
     }
 
     preload(){
@@ -25,21 +26,39 @@ class GameScene extends Phaser.Scene {
     }
 
     create(){
-        console.log(localStorage.getItem("gameState"))
-        var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","game_mode":"normal"}';
-		var options_data = JSON.parse(json);
+        if (!this.gameStarted) {
+            this.normalButton = this.add.text(100, 100, 'Normal Mode', { fill: '#0f0' })
+                .setInteractive()
+                .on('pointerdown', () => this.startGame('normal'));
+            this.infiniteButton = this.add.text(300, 100, 'Infinite Mode', { fill: '#0f0' })
+                .setInteractive()
+                .on('pointerdown', () => this.startGame('infinite'));
+            
+            
+            console.log(localStorage.getItem("gameState"))
+            var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","level_infinite":1}';
+		    var options_data = JSON.parse(json);
 
-        console.log(localStorage.getItem("scores"))
-
-        this.dificulty = options_data.dificulty;
-        this.gameMode = options_data.game_mode;
-		this.username = sessionStorage.getItem("username","unknown");
-		this.arrayCards = this.arrayCardsTotal.slice(); // Copy the array
-		this.arrayCards.sort(function(){return Math.random() - 0.5}); // Shuffle the array
-        if(this.gameMode=="normal"){
-            this.num_cards = options_data.cards; // Set num_cards to the value from localStorage
+            this.num_cards = options_data.cards;
+            this.dificulty = options_data.dificulty;
+            this.level = parseInt(options_data.level_infinite);
+            
+		    this.username = sessionStorage.getItem("username","unknown");
         }
         else{
+            this.startGame('infinite');
+        }
+    }
+    update(){}
+
+    startGame(mode) { 
+        this.gameMode = mode;
+        this.gameStarted = true;
+        this.normalButton.visible = false;
+        this.infiniteButton.visible = false; 
+		this.arrayCards = this.arrayCardsTotal.slice(); // Copy the array
+		this.arrayCards.sort(function(){return Math.random() - 0.5}); // Shuffle the array
+        if (this.gameMode == "infinite") {
             this.num_cards = Math.min(4, this.level + 1);
         }
 		this.arrayCards = this.arrayCards.slice(0, this.num_cards); // Take the first numCards elements
@@ -59,14 +78,13 @@ class GameScene extends Phaser.Scene {
                 this.cards.create(xPos,yPos,'back');
                 xPos+=100;
 		}
-        console.log(options_data);
+        //console.log(options_data);
 
         
         this.cards.children.iterate((card) => {
             card.disableBody(true, true);
         });
     
-        console.log(this.gameMode)
         if(this.gameMode=="infinite"){
             if(this.dificulty=="easy"){
                 setTimeout(() => {
@@ -170,15 +188,16 @@ class GameScene extends Phaser.Scene {
             
                         if (this.score <= 0) {
                             alert("Game Over");
-                            let name = sessionStorage.getItem("username");
-                            saveScore(name, this.totalScore);
+                            if (this.gameMode == "infinite") {
+                                let name = sessionStorage.getItem("username");
+                                saveScore(name, this.totalScore);
+                            }
                             loadpage("../../index.html");
                         }
 
                     } else {
                         this.correct++;
                         if (this.correct >= this.num_cards) {
-                            console.log(this.gameMode);
                             if (this.gameMode == "infinite") {
                                 this.restartGame();
                             } 
@@ -195,7 +214,7 @@ class GameScene extends Phaser.Scene {
             }, card);                        
         });
     }
-    update(){}
+    
 
     restartGame() {
         this.level++;
