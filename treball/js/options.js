@@ -42,6 +42,7 @@ var options = function(){
 				this.num = options_data.cards;
 				this.dificulty = options_data.dificulty;
 				this.level_infinite = options_data.level_infinite;
+				loadpage("../");
 			},
 			save: function(){
 				options_data.cards = this.num;
@@ -72,5 +73,5 @@ var options = function(){
 //console.log(options.getOptionsString());
 //console.log(options.getNumOfCards());
 //console.log(options.getDificulty());
-console.log(options.getLevelInfinite());
+//console.log(options.getLevelInfinite());
 //console.log(options.options_data);

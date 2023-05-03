@@ -1,15 +1,21 @@
-function getTopScores(count) {
-    let scores = JSON.parse(localStorage.getItem('scores') || '[]');
-    return scores.slice(0, count);
-}
+new Vue({
+    el: '#ranking_id',
+    data: {
+      topScores: []
+    },
+    mounted() {
+        console.log(localStorage.getItem('scores'))
 
-let topScores = getTopScores(5);
-
-let rankingList = document.getElementById('ranking-list');
-
-for (let i = 0; i < topScores.length; i++) {
-    let score = topScores[i];
-    let scoreItem = document.createElement('li');
-    scoreItem.textContent = `${score.name}: ${score.score}`;
-    rankingList.appendChild(scoreItem);
-}
+      if (localStorage.getItem('scores')) {
+        try {
+          let json = localStorage.getItem('scores');
+          var sacores = JSON.parse(json);
+          console.log(this.scores)
+          this.topScores = scores.slice(0, 5);
+        } catch(e) {
+          localStorage.removeItem('scores');
+        }
+      }
+      console.log(this.topScores)
+    }
+  })

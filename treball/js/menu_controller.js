@@ -23,9 +23,7 @@ function ranking(){
 }
 
 function load_game() {
-    let gameScene = game.scene.getScene('game');
-    gameScene.loadGame();
-	loadpage("./html/game.html");
+	loadpage("./html/saves.html");
 }
 
 

@@ -3,19 +3,19 @@
   <head>
     <link rel="stylesheet" href="../styles/main.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-    <script src="../js/ranking_controller.js"></script>
-
+    <script src="../js/saves_controller.js"></script>
     <title>Ranking</title>
   </head>
   <body>
-    <div id="ranking_id">
-      <h1>Ranking</h1>
-      <ul>
-        <li v-for="score in topScores">{{ score.name }}: {{ score.score }}</li>
-      </ul>
-    </div>
+    <h1>Saves List</h1>
+    <div id="saves_id">
+        <ul>
+          <li v-for="save in saves">{{ save.name }}: {{ save.totalScore }}</li>
+        </ul>
+      </div>
     <button class="menu-object" onclick="location.href='../index.html'">
         Tornar
     </button>
+    <script src="../js/saves_controller.js"></script>
   </body>
 </html>
