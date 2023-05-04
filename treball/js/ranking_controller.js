@@ -14,7 +14,7 @@ new Vue({
         this.topScores = scores.slice(0, 5);
         console.log(this.topScores)
       } catch(e) {
-        localStorage.removeItem('scores');
+        //localStorage.removeItem('scores');
       }
     }
   }

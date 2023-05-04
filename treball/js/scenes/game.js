@@ -29,7 +29,6 @@ class GameScene extends Phaser.Scene {
     create(){
         var jsonG = localStorage.getItem("gameState");
         var gameStateData = JSON.parse(jsonG);
-        localStorage.clear("gameState");
 
         console.log("game state data", gameStateData)
 
