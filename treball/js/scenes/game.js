@@ -27,19 +27,31 @@ class GameScene extends Phaser.Scene {
     }
 
     create(){
-        var jsonG = localStorage.getItem("gameState");
-        var gameStateData = JSON.parse(jsonG);
-
-        console.log("game state data", gameStateData)
-
-        if(gameStateData != null){
-            this.saved = gameStateData.saved;
-            console.log("game started 1", this.gameStarted)
-            this.gameStarted = gameStateData.gameStarted;
-            console.log("game started 2", this.gameStarted)
+        if (!this.gameStarted) {
+            localStorage.removeItem('gameStateR');
         }
 
-        console.log("game started 3", this.gameStarted)
+        if (localStorage.getItem("gameStateR")){
+            var jsonG = localStorage.getItem("gameStateR");
+        }
+        else if(localStorage.getItem("gameStateS")) {
+            var jsonG = localStorage.getItem("gameStateS");
+            localStorage.removeItem('gameStateS');
+        }
+        else{
+            var jsonG = localStorage.getItem("gameState");
+        }
+        var gameStateData = JSON.parse(jsonG);
+
+        if(gameStateData != null){
+            this.gameMode = gameStateData.gameMode;
+            this.dificulty = gameStateData.dificulty;
+            this.level = gameStateData.level;
+            this.totalScore = gameStateData.totalScore;
+            this.username = gameStateData.username;
+            this.saved = gameStateData.saved;
+            this.gameStarted = gameStateData.gameStarted;
+        }
 
         if (!this.gameStarted) {
             this.normalButton = this.add.text(100, 100, 'Normal Mode', { fill: '#0f0' })
@@ -49,7 +61,6 @@ class GameScene extends Phaser.Scene {
                 .setInteractive()
                 .on('pointerdown', () => this.startGame('infinite'));
 
-            console.log(localStorage.getItem("gameState"))
             var json = localStorage.getItem("config") || '{"cards":2,"dificulty":"hard","level_infinite":1}';
             var options_data = JSON.parse(json);
 
@@ -62,20 +73,16 @@ class GameScene extends Phaser.Scene {
         else{
             this.startGame('infinite');
         }
-
-        if(this.saved){
-            this.loadGame();
-        }
     }
     update(){}
 
     startGame(mode) {
-        console.log(localStorage.getItem("gameState"))
-        console.log("level", this.level)
         this.gameMode = mode;
-
-        this.normalButton.visible = false;
-        this.infiniteButton.visible = false;
+        
+        if (!this.gameStarted) {
+            this.normalButton.visible = false;
+            this.infiniteButton.visible = false;
+        }
 
 		this.arrayCards = this.arrayCardsTotal.slice(); // Copy the array
 		this.arrayCards.sort(function(){return Math.random() - 0.5}); // Shuffle the array
@@ -99,13 +106,12 @@ class GameScene extends Phaser.Scene {
                 this.cards.create(xPos,yPos,'back');
                 xPos+=100;
 		}
-        //console.log(options_data);
 
         this.cards.children.iterate((card) => {
             card.disableBody(true, true);
         });
 
-        if(this.gameMode=="infinite"){
+        if(this.gameMode=="normal"){
             if(this.dificulty=="easy"){
                 setTimeout(() => {
                     this.cards.children.iterate((card) => {
@@ -209,7 +215,7 @@ class GameScene extends Phaser.Scene {
                             alert("Game Over");
                             if (this.gameMode == "infinite") {
                                 let name = sessionStorage.getItem("username");
-                                saveScore(name, this.totalScore);
+                                this.saveScore(name, this.totalScore);
                             }
                             loadpage("../../index.html");
                         }
@@ -244,28 +250,6 @@ class GameScene extends Phaser.Scene {
         this.gameStarted = gameState.gameStarted;
     }
 
-    saveLoadGame(save = true) {
-        if (save) {
-            let gameState = {
-                gameMode: this.gameMode,
-                dificulty: this.dificulty,
-                level: this.level,
-                totalScore: this.totalScore,
-                username: this.username,
-                saved: true,
-                gameStarted: true
-            };
-            let savedGames = JSON.parse(localStorage.getItem('gameState') || '[]');
-            savedGames.push(gameState);
-            localStorage.setItem('gameState', JSON.stringify(savedGames));
-        } else {
-            let gameState = JSON.parse(localStorage.getItem('gameState'));
-            if (gameState) {
-                this.updateGameProperties(gameState);
-            }
-        }
-    }
-
     restartGame() {
         this.level++;
         this.num_cards = Math.min(4, this.level + 1);
@@ -275,6 +259,32 @@ class GameScene extends Phaser.Scene {
         this.showTime -= 1000;
         this.gameStarted = true;
 
+        let gameStateR = {
+            gameMode: this.gameMode,
+            dificulty: this.dificulty,
+            level: this.level,
+            totalScore: this.totalScore,
+            username: this.username,
+            saved: this.saved,
+            gameStarted: this.gameStarted
+        };
+        
+        this.gameMode = gameStateR.gameMode;
+        this.dificulty = gameStateR.dificulty;
+        this.level = gameStateR.level;
+        this.totalScore = gameStateR.totalScore;
+        this.username = gameStateR.username;
+        this.saved = gameStateR.saved;
+        this.gameStarted = gameStateR.gameStarted;
+
+        localStorage.setItem('gameStateR', JSON.stringify(gameStateR));
+
+        this.scene.restart();
+    }
+
+    saveGame() {
+        this.saved = true;
+        this.gameStarted = true;
         let gameState = {
             gameMode: this.gameMode,
             dificulty: this.dificulty,
@@ -284,34 +294,17 @@ class GameScene extends Phaser.Scene {
             saved: this.saved,
             gameStarted: this.gameStarted
         };
-        this.updateGameProperties(gameState);
-
-        this.scene.restart();
-    }
-
-    saveGame() {
-        this.saved = true;
-        this.gameStarted = true;
-        let gameState = {
-          gameMode: this.gameMode,
-          dificulty: this.dificulty,
-          level: this.level,
-          totalScore: this.totalScore,
-          username: this.username,
-          saved: this.saved,
-          gameStarted: this.gameStarted
-        };
 
         let savedGames = JSON.parse(localStorage.getItem('gameState') || '[]');
         savedGames.push(gameState);
         localStorage.setItem('gameState', JSON.stringify(savedGames));
-      }
+    }
 
-    loadGame() {
-        let gameState = JSON.parse(localStorage.getItem('gameState'));
-        if (gameState) {
-            this.updateGameProperties(gameState);
-        }
-        this.startGame(this.gameMode)
+    saveScore(name,score) {
+        let scores = JSON.parse(localStorage.getItem('scores') || '[]');
+        let newScore = { name: name, score: score };
+        scores.push(newScore);
+        scores.sort((a, b) => b.score - a.score);
+        localStorage.setItem('scores', JSON.stringify(scores));
     }
 }
